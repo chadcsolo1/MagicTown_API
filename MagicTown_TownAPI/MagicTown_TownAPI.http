@@ -1,0 +1,6 @@
+@MagicTown_TownAPI_HostAddress = http://localhost:5034
+
+GET {{MagicTown_TownAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
