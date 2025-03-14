@@ -1,4 +1,5 @@
 ﻿using MagicTown_TownAPI.Data;
+using MagicTown_TownAPI.Logging;
 using MagicTown_TownAPI.Models.DTO;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -9,10 +10,17 @@ namespace MagicTown_TownAPI.Controllers
     [ApiController]
     public class TownAPIController : ControllerBase
     {
+        private readonly ILogging _logger;
+        public TownAPIController(ILogging logger)
+        {
+            _logger = logger;
+        }
+
         [HttpGet("towns")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<TownDTO>> GetTowns()
         {
+            _logger.Log("Getting all Towns...", "info");
             return Ok(TownStore.townList);
         }
 
@@ -23,11 +31,12 @@ namespace MagicTown_TownAPI.Controllers
         //[ProducesResponseType(200, Type = typeof(TownDTO))]
         public ActionResult<TownDTO> GetTown(int id)
         {
-            if (id == 0) {return BadRequest("The id you provided was invalid.");}
+            _logger.Log($"Retrieving Town with an id of : {id}", "info");
+            if (id == 0) {return BadRequest("The id you provided was invalid."); _logger.Log("Id provided was invalid.", "error");}
 
             var town = TownStore.townList.FirstOrDefault(x => x.Id == id);
 
-            if (town == null) {return NotFound();}
+            if (town == null) {return NotFound(); _logger.Log($"Town with Id of : {id} was not found.", "error");}
 
             return Ok(town);
         }
