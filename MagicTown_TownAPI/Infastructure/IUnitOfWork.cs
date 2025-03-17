@@ -1,8 +1,11 @@
-﻿namespace MagicTown_TownAPI.Infastructure
+﻿using MagicTown_TownAPI.Data;
+
+namespace MagicTown_TownAPI.Infastructure
 {
-    interface IUnitOfWork
+    public interface IUnitOfWork
     {
-        ITownRepo townRepo { get; }
+        //private ApplicationDbContext context = new ApplicationDbContext();
         void Save();
+        void Rollback();
     }
 }

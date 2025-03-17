@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MagicTown_TownAPI.Data
 {
-    public class ApplicationDbContext : DbContext   
+    public class ApplicationDbContext<T> : DbContext where T : class
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
-        public DbSet<Town> Towns { get; set; }
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext<T>> options) : base(options) { }
+        public DbSet<T> entity { get; set; }
     }
 }

@@ -1,5 +1,8 @@
 using MagicTown_TownAPI.Data;
+using MagicTown_TownAPI.Infastructure;
 using MagicTown_TownAPI.Logging;
+using MagicTown_TownAPI.Models;
+using MagicTown_TownAPI.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +16,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSQLConnection"));
 });
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IRepository<Town>, Repository<Town>>();
 builder.Services.AddControllers(options =>
 {
     //options.ReturnHttpNotAcceptable = true;
