@@ -1,15 +1,43 @@
 ﻿using MagicTown_TownAPI.Data;
 using MagicTown_TownAPI.Infastructure;
+using MagicTown_TownAPI.Models;
 
 namespace MagicTown_TownAPI.Services
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly ApplicationDbContext _db;
-        //private ITownRepo _townRepo;
-        public UnitOfWork(ApplicationDbContext db)
+        //private ApplicationDbContext _db = new ApplicationDbContext();
+        private readonly ApplicationDbContext _context;
+
+        public IRepository<Town> townRepo;
+        public IRepository<House> houseRepo;
+        public UnitOfWork(ApplicationDbContext context)
         {
-            _db = db;
+            _context = context;
+        }
+
+        public IRepository<Town> TownRepo
+        {
+            get
+            {
+                if (this.townRepo == null)
+                {
+                    this.townRepo = new Repository<Town>(_context);
+                }
+                return townRepo;
+            }
+        }
+
+        public IRepository<House> HouseRepo
+        {
+            get
+            {
+                if (this.houseRepo == null)
+                {
+                    this.houseRepo = new Repository<House>(_context);
+                }
+                return houseRepo;
+            }
         }
 
         public void Rollback()
@@ -19,7 +47,7 @@ namespace MagicTown_TownAPI.Services
 
         public void Save()
         {
-            _db.SaveChanges();
+            _context.SaveChanges();
         }
     }
 }

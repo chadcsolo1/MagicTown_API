@@ -15,12 +15,20 @@ namespace MagicTown_TownAPI.Controllers
     {
         private readonly ILogging _logger;
         //private readonly ApplicationDbContext _context;
-        private readonly IRepository<Town> _repo;
-        public TownAPIController(ILogging logger, IRepository<Town> repo)
+        //private readonly IRepository<Town> _repo;
+        //private readonly IRepository<House> _houseRepo;
+        private readonly IUnitOfWork _unitOfWork;
+        //private readonly ITownRepo _townRepo;
+        public TownAPIController(ILogging logger, IUnitOfWork unitOfWork)
         {
             _logger = logger;
+            //_repo = repo;
+            //_houseRepo = houseRepo;
+            //_townRepo = townRepo;
+            _unitOfWork = unitOfWork;
             //_context = context;
-            _repo = repo;
+            //_repo = repo;
+            //_houseRepo = houseRepo;
         }
 
         [HttpGet("towns")]
@@ -29,7 +37,8 @@ namespace MagicTown_TownAPI.Controllers
         {
             _logger.Log("Getting all Towns...", "info");
             //return Ok(_context.Towns.ToList());
-            return Ok(_repo.GetAll());
+            //return Ok(_repo.GetAll());
+            return Ok(_unitOfWork.TownRepo.GetAll());
         }
 
         [HttpGet("{id:int}", Name = "GetTowns")]
@@ -40,14 +49,15 @@ namespace MagicTown_TownAPI.Controllers
         public ActionResult<TownDTO> GetTown(int id)
         {
             _logger.Log($"Retrieving Town with an id of : {id}", "info");
-            if (id == 0) {return BadRequest("The id you provided was invalid."); _logger.Log("Id provided was invalid.", "error");}
+            if (id == 0) {return BadRequest("The id you provided was invalid.");}
 
             //var town = _context.Towns.FirstOrDefault(x => x.Id == id);
 
 
             //if (town == null) {return NotFound(); _logger.Log($"Town with Id of : {id} was not found.", "error");}
 
-            return Ok(_repo.Get(id));
+            //return Ok(_repo.Get(id));
+            return Ok(_unitOfWork.TownRepo.Get(id));
         }
 
         [HttpPost]
@@ -61,7 +71,7 @@ namespace MagicTown_TownAPI.Controllers
             //    return BadRequest(ModelState);
             //}
             //if (TownDTO == null) {return BadRequest(TownDTO);}
-            //if (TownDTO.Id > 0) {return BadRequest("Please leave the Id value as 0. This value is automatically generated");}
+            if (TownDTO.Id > 0) {return BadRequest("Town - Please leave the Id value as 0. This value is automatically generated");}
 
             //TownDTO.Id = _context.Towns.OrderByDescending(x => x.Id).FirstOrDefault().Id + 1;
 
@@ -75,6 +85,13 @@ namespace MagicTown_TownAPI.Controllers
                 AverageIncome = TownDTO.AverageIncome,
             };
 
+            //House house = new House()
+            //{
+            //    Name = "Test House",
+            //    Description = "Testing Transactions House"
+            //};
+            //House house = null;
+
             //_context.Towns.Add(town);
             //_context.SaveChanges();
 
@@ -85,10 +102,13 @@ namespace MagicTown_TownAPI.Controllers
             //You can also return a simple 200 Http Response
             //return Ok(TownDTO);
 
-            _repo.Create(town);
+            _unitOfWork.TownRepo.Create(town);
+            _unitOfWork.Save();
             //return CreatedAtRoute("createTown", new { id = TownDTO.Id }, TownDTO);
             return Ok($"{town.Name} was created.");
+            //return Ok($"{town.Name} was created Successfully");
         }
+
 
         [HttpDelete("{id}", Name = "DeleteTown")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -99,12 +119,12 @@ namespace MagicTown_TownAPI.Controllers
             if (id == 0) {return BadRequest();}
 
             //var town = _context.Towns.FirstOrDefault(x => x.Id == id);
-            var town = _repo.Get(id);
+            var town = _unitOfWork.TownRepo.Get(id);
 
             if (town == null) { return NotFound("The Town you entered was not. No Town was deleted."); }
 
-            _repo.Delete(town);
-
+            _unitOfWork.TownRepo.Delete(town);
+            _unitOfWork.Save();
             //_context.Remove(town);
             //_context.SaveChanges();
             //You can return Ok200 or NoContent204 either works
@@ -120,7 +140,7 @@ namespace MagicTown_TownAPI.Controllers
             if (townDTO == null || id != townDTO.Id) { return BadRequest(); }
             //var town = _context.Towns.FirstOrDefault(x => x.Id == id);
 
-            var town = _repo.Get(id);
+            var town = _unitOfWork.TownRepo.Get(id);
             if (town == null) {return NotFound();}
 
             town.Name = townDTO.Name;
@@ -130,8 +150,8 @@ namespace MagicTown_TownAPI.Controllers
             town.Population = townDTO.Population;
             town.AverageIncome = townDTO.AverageIncome;
 
-            _repo.Update(town);
-
+            _unitOfWork.TownRepo.Update(town);
+            _unitOfWork.Save();
             //_context.Update(town);
             //_context.SaveChanges();
             return NoContent();
@@ -147,7 +167,7 @@ namespace MagicTown_TownAPI.Controllers
 
             //var town = _context.Towns.AsNoTracking().FirstOrDefault(x => x.Id == id);
 
-            var town = _repo.Get(id);
+            var town = _unitOfWork.TownRepo.Get(id);
 
             if (town == null) {return NotFound("No Town matching the provided Id was found");}
 
@@ -173,7 +193,7 @@ namespace MagicTown_TownAPI.Controllers
                 AverageIncome = townDTO.AverageIncome,
             };
 
-            _repo.Update(townModel);
+            _unitOfWork.TownRepo.Update(townModel);
 
             //_context.Update(townModel);
             //_context.SaveChanges();
@@ -181,6 +201,7 @@ namespace MagicTown_TownAPI.Controllers
             if (!ModelState.IsValid) { return BadRequest(); }
             return NoContent();
         }
+
 
     }
 }

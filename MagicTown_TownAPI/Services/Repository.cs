@@ -14,6 +14,7 @@ namespace MagicTown_TownAPI.Services
         }
         public void Create(T entity)
         {
+            if(entity == null) {throw new Exception($"Create Method in Repository - the entity was null {entity}");}
             _db.Set<T>().Add(entity);
             //_unitOfWork.Save();
         }

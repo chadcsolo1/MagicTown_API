@@ -3,9 +3,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MagicTown_TownAPI.Data
 {
-    public class ApplicationDbContext<T> : DbContext where T : class
+    public class ApplicationDbContext : DbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext<T>> options) : base(options) { }
-        public DbSet<T> entity { get; set; }
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
+        //public ApplicationDbContext() : base("DefaultConnection");
+        public DbSet<Town> Towns { get; set; }
+        public DbSet<House> Houses { get; set; }
+
     }
 }
