@@ -1,5 +1,7 @@
 ﻿using MagicTown_TownAPI.Data;
 using MagicTown_TownAPI.Infastructure;
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace MagicTown_TownAPI.Services
 {
@@ -29,14 +31,37 @@ namespace MagicTown_TownAPI.Services
         {
             var entity = _db.Set<T>().Find(id);
 
-            if(entity == null) { throw new Exception($"The entity was does not exist based on the {id} you provided");}
+            if (entity == null)
+            {
+                throw new Exception($"The entity was does not exist based on the {id} you provided");
+            }
             return entity;
         }
 
-        public List<T> GetAll()
+        public IEnumerable<T> GetAll(
+            Expression<Func<T, bool>> filter = null,
+            Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
+            string includeProperties = "",
+            int? pageSize = null, int? pageNumber = null
+            )
         {
-            return _db.Set<T>().ToList();
+            IQueryable<T> query = _db.Set<T>();
+
+            if (filter != null)
+                query = query.Where(filter);
+            if (orderBy != null)
+                query = orderBy(query);
+
+            foreach (var property in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                query = query.Include(property);
+            }
+
+            return (pageNumber != null && pageSize != null) ?
+                query.Skip((pageNumber.Value - 1) * pageSize.Value).Take(pageSize.Value) : query;
+
         }
+
 
         public void Update(T entity)
         {
