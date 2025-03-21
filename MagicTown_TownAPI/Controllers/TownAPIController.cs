@@ -6,6 +6,7 @@ using MagicTown_TownAPI.Models.DTO;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace MagicTown_TownAPI.Controllers
 {
@@ -27,7 +28,8 @@ namespace MagicTown_TownAPI.Controllers
         public ActionResult<IEnumerable<TownDTO>> GetTowns()
         {
             _logger.Log("Getting all Towns...", "info");
-            return Ok(_unitOfWork.TownRepo.GetAll();
+            return Ok(_unitOfWork.TownRepo.GetAll(filter: f => f.AverageIncome > 1500.00 && f.AverageIncome < 5000.00, orderBy: o => o.OrderBy(p => p.Population), pageNumber: 1, pageSize: 3));
+            //return Ok(_unitOfWork.TownRepo.GetAll(query));
             _logger.Log("All Towns were retrieved.", "info");
         }
 

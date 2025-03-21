@@ -38,10 +38,23 @@ namespace MagicTown_TownAPI.Services
             return entity;
         }
 
+        //public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter = null)
+        //{
+        //    IQueryable<T> query = _db.Set<T>();
+
+        //    if(filter != null)
+        //    {
+        //        query = query.Where(filter);
+        //    }
+
+        //    return query.ToList();
+
+        //}
+
+
         public IEnumerable<T> GetAll(
-            Expression<Func<T, bool>> filter = null,
+            Expression<Func<T, bool>>? filter = null,
             Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
-            string includeProperties = "",
             int? pageSize = null, int? pageNumber = null
             )
         {
@@ -51,11 +64,6 @@ namespace MagicTown_TownAPI.Services
                 query = query.Where(filter);
             if (orderBy != null)
                 query = orderBy(query);
-
-            foreach (var property in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-            {
-                query = query.Include(property);
-            }
 
             return (pageNumber != null && pageSize != null) ?
                 query.Skip((pageNumber.Value - 1) * pageSize.Value).Take(pageSize.Value) : query;
