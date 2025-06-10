@@ -1,3 +1,4 @@
+using Asp.Versioning.Conventions;
 using MagicTown_TownAPI.Data;
 using MagicTown_TownAPI.Infastructure;
 using MagicTown_TownAPI.Logging;
@@ -28,6 +29,22 @@ builder.Services.AddControllers(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSingleton<ILogging, Logging>();
 builder.Services.AddSwaggerGen();
+builder.Services.AddApiVersioning( options =>
+{
+        options.AssumeDefaultVersionWhenUnspecified = true;
+        options.DefaultApiVersion = new Asp.Versioning.ApiVersion(1,0);
+        options.ReportApiVersions = true;
+}).AddMvc(options =>
+{
+        options.Conventions.Add(new VersionByNamespaceConvention());
+}).AddApiExplorer(options =>
+{
+        options.GroupNameFormat = "'v'V";
+        options.SubstituteApiVersionInUrl = true;
+
+}
+);
+
 
 var app = builder.Build();
 

@@ -1,4 +1,5 @@
-﻿using MagicTown_TownAPI.Data;
+﻿using Asp.Versioning;
+using MagicTown_TownAPI.Data;
 using MagicTown_TownAPI.Infastructure;
 using MagicTown_TownAPI.Logging;
 using MagicTown_TownAPI.Models;
@@ -8,9 +9,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-namespace MagicTown_TownAPI.Controllers
+namespace MagicTown_TownAPI.Controllers.v2
 {
-    [Route("api/TownAPI")]
+    [Route("api/v{version:apiVersion}/TownAPI")]
+    [ApiVersion("2.0")]
     [ApiController]
     public class TownAPIController : ControllerBase
     {
@@ -30,7 +32,7 @@ namespace MagicTown_TownAPI.Controllers
             _logger.Log("Getting all Towns...", "info");
             return Ok(_unitOfWork.TownRepo.GetAll(filter: f => f.AverageIncome > 1500.00 && f.AverageIncome < 5000.00, orderBy: o => o.OrderBy(p => p.Population), pageNumber: 1, pageSize: 3));
             //return Ok(_unitOfWork.TownRepo.GetAll(query));
-            _logger.Log("All Towns were retrieved.", "info");
+            _logger.Log("All Towns were retrieved from TownAPI 2.0..", "info");
         }
 
         [HttpGet("{id:int}", Name = "GetTowns")]
