@@ -11,9 +11,11 @@ using System.Linq.Expressions;
 
 namespace MagicTown_TownAPI.Controllers.v1
 {
-    [Route("api/v{version:apiVersion}/TownAPI")]
-    [ApiVersion("1.0")]
     [ApiController]
+    //[Route("api/v{version:apiVersion}/[controller]")]
+    [Route("api/TownAPI")]
+    [ApiVersion("1.0")]
+    
     public class TownAPIController : ControllerBase
     {
         private readonly ILogging _logger;
@@ -30,9 +32,10 @@ namespace MagicTown_TownAPI.Controllers.v1
         public ActionResult<IEnumerable<TownDTO>> GetTowns()
         {
             _logger.Log("Getting all Towns...", "info");
+            _logger.Log("All Towns were retrieved from TownAPI 1.0.", "info");
             return Ok(_unitOfWork.TownRepo.GetAll(filter: f => f.AverageIncome > 1500.00 && f.AverageIncome < 5000.00, orderBy: o => o.OrderBy(p => p.Population), pageNumber: 1, pageSize: 3));
             //return Ok(_unitOfWork.TownRepo.GetAll(query));
-            _logger.Log("All Towns were retrieved from TownAPI 1.0.", "info");
+            
         }
 
         [HttpGet("{id:int}", Name = "GetTowns")]
