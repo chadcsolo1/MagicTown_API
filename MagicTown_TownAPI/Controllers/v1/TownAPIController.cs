@@ -29,11 +29,11 @@ namespace MagicTown_TownAPI.Controllers.v1
 
         [HttpGet("towns")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public ActionResult<IEnumerable<TownDTO>> GetTowns()
+        public ActionResult<IEnumerable<TownDTO>> GetTowns([FromBody] FSP<Town> fsp)
         {
             _logger.Log("Getting all Towns...", "info");
             _logger.Log("All Towns were retrieved from TownAPI 1.0.", "info");
-            return Ok(_unitOfWork.TownRepo.GetAll(filter: f => f.AverageIncome > 1500.00 && f.AverageIncome < 5000.00, orderBy: o => o.OrderBy(p => p.Population), pageNumber: 1, pageSize: 3));
+            return Ok(_unitOfWork.TownRepo.GetAll(filter: fsp => fsp. > 1500.00 && f.AverageIncome < 5000.00, orderBy: o => o.OrderBy(p => p.Population), pageNumber: 1, pageSize: 3));
             //return Ok(_unitOfWork.TownRepo.GetAll(query));
             
         }
