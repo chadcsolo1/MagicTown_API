@@ -4,24 +4,12 @@ namespace MagicTown_TownAPI.Models.Functionalities
 {
     public class CustomExpressionFilter<T> where T : class
     {
-        public class ExpressionFilter
-        {
-            public string ColumnName
-            {
-                get;
-                set;
-            }
-
-            public string Value
-            {
-                get;
-                set;
-            } 
-        }
 
         public static Expression<Func<T, bool>> CustomFilter(List<ColumnFilter> columnFilters, string className)
         {
             Expression<Func<T,bool>> filters = null;
+
+
 
             try
             {
