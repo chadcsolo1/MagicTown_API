@@ -10,6 +10,7 @@ namespace MagicTown_TownAPI.Infastructure
             int? pageSize = null, int? pageNumber = null);
         //IEnumerable<T> GetAll(Expression<Func<T, bool>> filter = null, string? includeProperties = null);
         T Get(int id);
+        IEnumerable<T> GetAllNoFilter();
         void Create(T entity);
         void Update(T entity);
         void Delete(T entity);

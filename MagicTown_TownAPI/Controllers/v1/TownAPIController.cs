@@ -4,10 +4,12 @@ using MagicTown_TownAPI.Infastructure;
 using MagicTown_TownAPI.Logging;
 using MagicTown_TownAPI.Models;
 using MagicTown_TownAPI.Models.DTO;
+using MagicTown_TownAPI.Models.Functionalities;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using System.Text.Json;
 
 namespace MagicTown_TownAPI.Controllers.v1
 {
@@ -29,13 +31,81 @@ namespace MagicTown_TownAPI.Controllers.v1
 
         [HttpGet("towns")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public ActionResult<IEnumerable<TownDTO>> GetTowns([FromBody] FSP<Town> fsp)
+        public ActionResult<IEnumerable<TownDTO>> GetTowns([FromQuery] SearchParams searchParams)
         {
             _logger.Log("Getting all Towns...", "info");
             _logger.Log("All Towns were retrieved from TownAPI 1.0.", "info");
-            return Ok(_unitOfWork.TownRepo.GetAll(filter: fsp => fsp. > 1500.00 && f.AverageIncome < 5000.00, orderBy: o => o.OrderBy(p => p.Population), pageNumber: 1, pageSize: 3));
+
+            var towns = _unitOfWork.TownRepo.GetAllNoFilter();
+
+            List<ColumnFilter> columnFilters = new List<ColumnFilter>();
+            //If the searchParams > columnFilters is not null, then we will add the searchParam to the columnFilters list.
+            if (!string.IsNullOrEmpty(searchParams.ColumnFilters))
+            {
+                try
+                {
+                    columnFilters.AddRange(JsonSerializer.Deserialize<List<ColumnFilter>>(searchParams.ColumnFilters));
+                } catch (Exception e)
+                {
+                    columnFilters = new List<ColumnFilter>();
+                }
+            }
+
+            //Same thing as abocve except with searchParams > ColumnSorting
+            List<ColumnSorting> columnSorting = new List<ColumnSorting>();
+            if (!string.IsNullOrEmpty(searchParams.OrderBy))
+            {
+                try
+                {
+                    columnSorting.AddRange(JsonSerializer.Deserialize<List<ColumnSorting>>(searchParams.OrderBy));
+                } catch (Exception e)
+                {
+                    columnSorting = new List<ColumnSorting>();
+                }
+            }
+
+
+            Expression<Func<Town,bool>> filters = null;
+
+            //First, we are checking our SearchTerm. If it contains information we are creating a filter
+            var searchTerm = "";
+            if (!string.IsNullOrEmpty(searchParams.SearchTerm))
+            {
+                searchTerm = searchParams.SearchTerm.Trim().ToLower();
+                filters = x => x.Name.ToLower().Contains(searchTerm);
+            }
+
+            //Then we are overwriting a filter if columnFilters has data
+            if (columnFilters.Count > 0)
+            {
+                filters = CustomExpressionFilter<Town>.CustomFilter(columnFilters, "Towns");
+            }
+
+            var query = towns.AsQueryable().CustomQuery(filters);
+            var count = query.Count();
+            var filterdData = query.CustomPagination(searchParams.PageNumber, searchParams.PageSize).ToList();
+
+            var pagedList = new PagedList<Town>(filterdData, count, searchParams.PageNumber, searchParams.PageSize);
+
+            if (pagedList != null)
+            {
+                Response.AddPaginationHeader(pagedList.MetaData);
+            }
+
+
+            return Ok(pagedList.Select(town => new TownDTO
+            {
+                Id = town.Id,
+                Name = town.Name,
+                Description = town.Description,
+                BiggestAttraction = town.BiggestAttraction,
+                ImageUrl = town.ImageUrl,
+                Population = town.Population,
+                AverageIncome = town.AverageIncome
+            }).ToList());
+            //return Ok(_unitOfWork.TownRepo.GetAll(filter: fsp => fsp. > 1500.00 && f.AverageIncome < 5000.00, orderBy: o => o.OrderBy(p => p.Population), pageNumber: 1, pageSize: 3));
             //return Ok(_unitOfWork.TownRepo.GetAll(query));
-            
+
         }
 
         [HttpGet("{id:int}", Name = "GetTowns")]

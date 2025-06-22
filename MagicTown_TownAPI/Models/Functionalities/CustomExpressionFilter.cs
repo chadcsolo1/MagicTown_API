@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using MagicTown_TownAPI.Models.Functionalities;
 
 namespace MagicTown_TownAPI.Models.Functionalities
 {
@@ -8,7 +9,6 @@ namespace MagicTown_TownAPI.Models.Functionalities
         public static Expression<Func<T, bool>> CustomFilter(List<ColumnFilter> columnFilters, string className)
         {
             Expression<Func<T,bool>> filters = null;
-
 
 
             try

@@ -38,6 +38,11 @@ namespace MagicTown_TownAPI.Services
             return entity;
         }
 
+        public IEnumerable<T> GetAllNoFilter()
+        {
+            return _db.Set<T>().ToList() ?? throw new Exception("No entities found in the database.");
+        }
+
         //public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter = null)
         //{
         //    IQueryable<T> query = _db.Set<T>();
