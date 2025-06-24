@@ -57,6 +57,12 @@ namespace MagicTown_TownAPI.Services
         //}
 
 
+        //GetAll(
+        //    Expression<Func<T, bool>>? filter = null,
+        //    Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
+        //    int? pageSize = null, int? pageNumber = null
+        //    )
+
         public IEnumerable<T> GetAll(
             Expression<Func<T, bool>>? filter = null,
             Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,

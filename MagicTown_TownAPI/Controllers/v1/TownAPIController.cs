@@ -34,61 +34,84 @@ namespace MagicTown_TownAPI.Controllers.v1
 
         [HttpGet("towns")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public ActionResult<IEnumerable<TownDTO>> GetTowns([FromQuery] SearchParams searchParams)
+        public ActionResult<IEnumerable<TownDTO>> GetTowns([FromQuery] TownFSP<Town> fsp)
         {
+            //SearchParams searchParams
             _logger.Log("Getting all Towns...", "info");
             _logger.Log("All Towns were retrieved from TownAPI 1.0.", "info");
 
-            var towns = _unitOfWork.TownRepo.GetAllNoFilter();
+            //*********
+            //Directly below I am going to try and emplement an FSP (Filtering, Sorting, and Pagination) method that will allow the caller to filter, sort, and paginate the results.
+            //while only ever pulling entities from the database that match the FSP criteria. This will improve API performance.
+            //**********
 
-            List<ColumnFilter> columnFilters = new List<ColumnFilter>();
-            //If the searchParams > columnFilters is not null, then we will add the searchParam to the columnFilters list.
-            if (!string.IsNullOrEmpty(searchParams.ColumnFilters))
+            var towns = _unitOfWork.TownRepo.GetAll(filter: fsp.Filter, orderBy: fsp.OrderBy, pageSize: fsp.PageSize, pageNumber: fsp.PageNumber).ToList();
+
+            if (towns == null || towns.Count == 0)
             {
-                try
-                {
-                    columnFilters.AddRange(JsonSerializer.Deserialize<List<ColumnFilter>>(searchParams.ColumnFilters));
-                } catch (Exception e)
-                {
-                    columnFilters = new List<ColumnFilter>();
-                }
+                _logger.Log("No Towns were found in the database.", "error");
+                return NotFound("No Towns were found in the database.");
             }
+
+            return Ok(towns);
+
+
+
+            //*********
+            //Below is a way of Filtering, Sorting, and Paginating (FSP), however I do not believe it fully solves the issue
+            //that is typically addressed by FSP, which is to limit the number of entities pulled back from the database based on the FSP provided by the caller of the endpoint.
+            //The Below method does only return results to the caller that fit the FSP criteria but initially pulls all entities.
+            //**********
+            //var towns = _unitOfWork.TownRepo.GetAllNoFilter();
+
+            //List<ColumnFilter> columnFilters = new List<ColumnFilter>();
+            //If the searchParams > columnFilters is not null, then we will add the searchParam to the columnFilters list.
+            //if (!string.IsNullOrEmpty(searchParams.ColumnFilters))
+            //{
+            //    try
+            //    {
+            //        columnFilters.AddRange(JsonSerializer.Deserialize<List<ColumnFilter>>(searchParams.ColumnFilters));
+            //    } catch (Exception e)
+            //    {
+            //        columnFilters = new List<ColumnFilter>();
+            //    }
+            //}
 
             //Same thing as abocve except with searchParams > ColumnSorting
-            List<ColumnSorting> columnSorting = new List<ColumnSorting>();
-            if (!string.IsNullOrEmpty(searchParams.OrderBy))
-            {
-                try
-                {
-                    columnSorting.AddRange(JsonSerializer.Deserialize<List<ColumnSorting>>(searchParams.OrderBy));
-                } catch (Exception e)
-                {
-                    columnSorting = new List<ColumnSorting>();
-                }
-            }
+            //List<ColumnSorting> columnSorting = new List<ColumnSorting>();
+            //if (!string.IsNullOrEmpty(searchParams.OrderBy))
+            //{
+            //    try
+            //    {
+            //        columnSorting.AddRange(JsonSerializer.Deserialize<List<ColumnSorting>>(searchParams.OrderBy));
+            //    } catch (Exception e)
+            //    {
+            //        columnSorting = new List<ColumnSorting>();
+            //    }
+            //}
 
 
-            Expression<Func<Town,bool>> filters = null;
+            //Expression<Func<Town,bool>> filters = null;
 
             //First, we are checking our SearchTerm. If it contains information we are creating a filter
-            var searchTerm = "";
-            if (!string.IsNullOrEmpty(searchParams.SearchTerm))
-            {
-                searchTerm = searchParams.SearchTerm.Trim().ToLower();
-                filters = x => x.Name.ToLower().Contains(searchTerm);
-            }
+            //var searchTerm = "";
+            //if (!string.IsNullOrEmpty(searchParams.SearchTerm))
+            //{
+            //    searchTerm = searchParams.SearchTerm.Trim().ToLower();
+            //    filters = x => x.Name.ToLower().Contains(searchTerm);
+            //}
 
             //Then we are overwriting a filter if columnFilters has data
-            if (columnFilters.Count > 0)
-            {
-                filters = CustomExpressionFilter<Town>.CustomFilter(columnFilters, "Towns");
-            }
+            //if (columnFilters.Count > 0)
+            //{
+            //    filters = CustomExpressionFilter<Town>.CustomFilter(columnFilters, "Towns");
+            //}
 
-            var query = towns.AsQueryable().CustomQuery(filters);
-            var count = query.Count();
-            var filterdData = query.CustomPagination(searchParams.PageNumber, searchParams.PageSize).ToList();
+            //var query = towns.AsQueryable().CustomQuery(filters);
+            //var count = query.Count();
+            //var filterdData = query.CustomPagination(searchParams.PageNumber, searchParams.PageSize).ToList();
 
-            var pagedList = new PagedList<Town>(filterdData, count, searchParams.PageNumber, searchParams.PageSize);
+            //var pagedList = new PagedList<Town>(filterdData, count, searchParams.PageNumber, searchParams.PageSize);
 
             //if (pagedList != null)
             //{
@@ -96,22 +119,24 @@ namespace MagicTown_TownAPI.Controllers.v1
             //}
 
 
-            return Ok(pagedList.Select(town => new TownDTO
-            {
-                Id = town.Id,
-                Name = town.Name,
-                Description = town.Description,
-                BiggestAttraction = town.BiggestAttraction,
-                ImageUrl = town.ImageUrl,
-                Population = town.Population,
-                AverageIncome = town.AverageIncome
-            }).ToList());
+            //return Ok(pagedList.Select(town => new TownDTO
+            //{
+            //    Id = town.Id,
+            //    Name = town.Name,
+            //    Description = town.Description,
+            //    BiggestAttraction = town.BiggestAttraction,
+            //    ImageUrl = town.ImageUrl,
+            //    Population = town.Population,
+            //    AverageIncome = town.AverageIncome
+            //}).ToList());
+
+
             //return Ok(_unitOfWork.TownRepo.GetAll(filter: fsp => fsp. > 1500.00 && f.AverageIncome < 5000.00, orderBy: o => o.OrderBy(p => p.Population), pageNumber: 1, pageSize: 3));
             //return Ok(_unitOfWork.TownRepo.GetAll(query));
 
         }
 
-        [HttpGet("{id:int}", Name = "GetTowns")]
+        [HttpGet("{id:int}", Name = "GetTown")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
