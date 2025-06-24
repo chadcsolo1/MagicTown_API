@@ -8,8 +8,11 @@ using MagicTown_TownAPI.Models.Functionalities;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text.Json;
+
 
 namespace MagicTown_TownAPI.Controllers.v1
 {
@@ -87,10 +90,10 @@ namespace MagicTown_TownAPI.Controllers.v1
 
             var pagedList = new PagedList<Town>(filterdData, count, searchParams.PageNumber, searchParams.PageSize);
 
-            if (pagedList != null)
-            {
-                Response.AddPaginationHeader(pagedList.MetaData);
-            }
+            //if (pagedList != null)
+            //{
+            //    Response.AddPaginationHeader(pagedList.MetaData);
+            //}
 
 
             return Ok(pagedList.Select(town => new TownDTO
