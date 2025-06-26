@@ -38,7 +38,7 @@ namespace MagicTown_TownAPI.Controllers.v2
             
         }
 
-        [HttpGet("{id:int}", Name = "GetTowns")]
+        [HttpGet("{id:int}", Name = "GetTown")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

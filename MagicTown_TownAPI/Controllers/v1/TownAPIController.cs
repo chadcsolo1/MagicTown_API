@@ -32,28 +32,28 @@ namespace MagicTown_TownAPI.Controllers.v1
             _unitOfWork = unitOfWork;
         }
 
-        [HttpGet("towns")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public ActionResult<IEnumerable<TownDTO>> GetTowns([FromQuery] TownFSP<Town> fsp)
-        {
-            //SearchParams searchParams
-            _logger.Log("Getting all Towns...", "info");
-            _logger.Log("All Towns were retrieved from TownAPI 1.0.", "info");
+        //[HttpGet(Name = "GetTowns")]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
+        //public ActionResult<IEnumerable<TownDTO>> GetTowns([FromQuery] TownFSP<Town> fsp)
+        //{
+        //    //SearchParams searchParams
+        //    _logger.Log("Getting all Towns...", "info");
+        //    _logger.Log("All Towns were retrieved from TownAPI 1.0.", "info");
 
             //*********
             //Directly below I am going to try and emplement an FSP (Filtering, Sorting, and Pagination) method that will allow the caller to filter, sort, and paginate the results.
             //while only ever pulling entities from the database that match the FSP criteria. This will improve API performance.
             //**********
 
-            var towns = _unitOfWork.TownRepo.GetAll(filter: fsp.Filter, orderBy: fsp.OrderBy, pageSize: fsp.PageSize, pageNumber: fsp.PageNumber).ToList();
+            //var towns = _unitOfWork.TownRepo.GetAll(filter: fsp.Filter, orderBy: fsp.OrderBy, pageSize: fsp.PageSize, pageNumber: fsp.PageNumber).ToList();
 
-            if (towns == null || towns.Count == 0)
-            {
-                _logger.Log("No Towns were found in the database.", "error");
-                return NotFound("No Towns were found in the database.");
-            }
+            //if (towns == null || towns.Count == 0)
+            //{
+            //    _logger.Log("No Towns were found in the database.", "error");
+            //    return NotFound("No Towns were found in the database.");
+            //}
 
-            return Ok(towns);
+            //return Ok(towns);
 
 
 
@@ -134,6 +134,29 @@ namespace MagicTown_TownAPI.Controllers.v1
             //return Ok(_unitOfWork.TownRepo.GetAll(filter: fsp => fsp. > 1500.00 && f.AverageIncome < 5000.00, orderBy: o => o.OrderBy(p => p.Population), pageNumber: 1, pageSize: 3));
             //return Ok(_unitOfWork.TownRepo.GetAll(query));
 
+        //}
+
+        [HttpGet(Name = "GetTowns")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<IEnumerable<TownDTO>> GetTowns()
+        {
+            _logger.Log("Getting all Towns...", "info");
+            //if (fsp == null)
+            //{
+            //    _logger.Log("The fsp provided was null.", "error");
+            //    return BadRequest("The fsp provided was null.");
+            //}
+            //var towns = _unitOfWork.TownRepo.GetAll(filter: fsp.Filter, orderBy: fsp.OrderBy, pageSize: fsp.PageSize, pageNumber: fsp.PageNumber).ToList();
+            var towns = _unitOfWork.TownRepo.GetAllNoFilter().ToList();
+            if (towns == null || towns.Count == 0)
+            {
+                _logger.Log("No Towns were found in the database.", "error");
+                return NotFound("No Towns were found in the database.");
+            }
+            _logger.Log("All Towns were retrieved from TownAPI 1.0.", "info");
+            return Ok(towns);
         }
 
         [HttpGet("{id:int}", Name = "GetTown")]
@@ -152,7 +175,7 @@ namespace MagicTown_TownAPI.Controllers.v1
             return Ok(_unitOfWork.TownRepo.Get(id));
         }
 
-        [HttpPost("createtown")]
+        [HttpPost("Createtown")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<TownDTO> CreateTown([FromBody] TownDTO TownDTO) 
