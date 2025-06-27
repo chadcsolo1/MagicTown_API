@@ -99,5 +99,10 @@ namespace MagicTown_TownAPI.Services
             //_unitOfWork.Save();
             
         }
+
+        public IEnumerable<T> GetAllTownsTest(string filter, string orderBy, int pageSize, int pageNumber)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

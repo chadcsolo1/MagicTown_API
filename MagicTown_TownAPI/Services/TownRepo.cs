@@ -67,7 +67,10 @@ namespace MagicTown_TownAPI.Services
                     query = query.OrderBy(t => t.AverageIncome);
                 }
             }
-            return _db.Towns.ToList();
+
+            return (pageNumber != null && pageSize != null) ? 
+                query.Skip((pageNumber - 1) * pageSize).Take(pageSize) : query;
+            //return _db.Towns.ToList();
         }
 
         public Town GetTown(int id)

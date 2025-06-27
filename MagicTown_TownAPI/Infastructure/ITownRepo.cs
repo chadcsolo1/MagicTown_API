@@ -5,6 +5,7 @@ namespace MagicTown_TownAPI.Infastructure
     public interface ITownRepo
     {
         List<Town> GetAllTowns();
+        IEnumerable<Town> GetAllTownsTest(string filter, string orderBy, int pageSize, int pageNumber);
         Town GetTown(int id);
         void CreateTown(Town town);
         void UpdateTown(Town town);

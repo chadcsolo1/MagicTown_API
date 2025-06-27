@@ -150,6 +150,8 @@ namespace MagicTown_TownAPI.Controllers.v1
             }
             //var towns = _unitOfWork.TownRepo.GetAll(filter: fsp.Filter, orderBy: fsp.OrderBy, pageSize: fsp.PageSize, pageNumber: fsp.PageNumber).ToList();
             //var towns = _unitOfWork.TownRepo.GetAllNoFilter().ToList();
+            var towns = _unitOfWork.TownRepo.GetAllTownsTest(fsp.Filter, fsp.OrderBy, fsp.PageSize, fsp.PageNumber).ToList();
+            _unitOfWork.
             if (towns == null || towns.Count == 0)
             {
                 _logger.Log("No Towns were found in the database.", "error");

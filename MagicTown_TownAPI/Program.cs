@@ -18,9 +18,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(option =>
 {
     option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSQLConnection"));
 });
-//builder.Services.AddScoped<ITownRepo, ITownRepo>();
+builder.Services.AddScoped<ITownRepo, TownRepo>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IRepository<Town>, Repository<Town>>();
+//builder.Services.AddScoped<IRepository<Town>, Repository<Town>>();
 builder.Services.AddScoped<IRepository<House>, Repository<House>>();
 builder.Services.AddControllers(options =>
 {
