@@ -140,16 +140,16 @@ namespace MagicTown_TownAPI.Controllers.v1
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<IEnumerable<TownDTO>> GetTowns()
+        public ActionResult<IEnumerable<TownDTO>> GetTowns([FromQuery] TownFSP fsp)
         {
             _logger.Log("Getting all Towns...", "info");
-            //if (fsp == null)
-            //{
-            //    _logger.Log("The fsp provided was null.", "error");
-            //    return BadRequest("The fsp provided was null.");
-            //}
+            if (fsp == null)
+            {
+                _logger.Log("The fsp provided was null.", "error");
+                return BadRequest("The fsp provided was null.");
+            }
             //var towns = _unitOfWork.TownRepo.GetAll(filter: fsp.Filter, orderBy: fsp.OrderBy, pageSize: fsp.PageSize, pageNumber: fsp.PageNumber).ToList();
-            var towns = _unitOfWork.TownRepo.GetAllNoFilter().ToList();
+            //var towns = _unitOfWork.TownRepo.GetAllNoFilter().ToList();
             if (towns == null || towns.Count == 0)
             {
                 _logger.Log("No Towns were found in the database.", "error");

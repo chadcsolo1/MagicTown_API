@@ -63,6 +63,17 @@ namespace MagicTown_TownAPI.Services
         //    int? pageSize = null, int? pageNumber = null
         //    )
 
+        //public IEnumerable<T> GetAllTest(string filter, string orderBy, int pageSize, int pageNumber)
+        //{
+        //    var town = _db.Set<T>().Where()
+
+        //    if (!string.IsNullOrEmpty(filter))
+        //    {
+        //        town = town.Where(x => );
+        //        //town = town.Where(t => EF.Functions.Like(t.ToString(), $"%{filter}%"));
+        //    }
+        //}
+
         public IEnumerable<T> GetAll(
             Expression<Func<T, bool>>? filter = null,
             Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,

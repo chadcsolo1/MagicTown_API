@@ -2,15 +2,16 @@
 
 namespace MagicTown_TownAPI.Models.Functionalities
 {
-    public class TownFSP<T>  where T : class
+    public class TownFSP
     {
-        public Expression<Func<T, bool>> Filter
+
+        public string? Filter
         {
             get;
             set;
         }
 
-        public Func<IQueryable<T>, IOrderedQueryable<T>> OrderBy
+        public string? OrderBy
         {
             get;
             set;
@@ -27,5 +28,28 @@ namespace MagicTown_TownAPI.Models.Functionalities
             get;
             set;
         }   
+        //public Expression<Func<Town, bool>> Filter
+        //{
+        //    get;
+        //    set;
+        //}
+
+        //public Func<IQueryable<Town>, IOrderedQueryable<Town>> OrderBy
+        //{
+        //    get;
+        //    set;
+        //}
+
+        //public int PageSize
+        //{
+        //    get;
+        //    set;
+        //}
+
+        //public int PageNumber
+        //{
+        //    get;
+        //    set;
+        //}   
     }
 }
