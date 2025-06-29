@@ -11,6 +11,7 @@ namespace MagicTown_TownAPI.Services
 
         public IRepository<Town> townRepo;
         public IRepository<House> houseRepo;
+        public ITownRepo townService;
         public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;
@@ -37,6 +38,18 @@ namespace MagicTown_TownAPI.Services
                     this.houseRepo = new Repository<House>(_context);
                 }
                 return houseRepo;
+            }
+        }
+
+        public ITownRepo TownService
+        {
+            get
+            {
+                if (this.townService == null)
+                {
+                    this.townService = new TownRepo(_context);
+                }
+                return townService;
             }
         }
 

@@ -7,6 +7,10 @@ namespace MagicTown_TownAPI.Infastructure
     {
         IRepository<Town> TownRepo { get; }
         IRepository<House> HouseRepo { get; }
+        ITownRepo TownService
+        {
+            get;
+        }
         void Save();
         void Rollback();
     }

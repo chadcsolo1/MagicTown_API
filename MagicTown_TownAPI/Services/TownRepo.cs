@@ -1,6 +1,7 @@
 ﻿using MagicTown_TownAPI.Data;
 using MagicTown_TownAPI.Infastructure;
 using MagicTown_TownAPI.Models;
+using System.Text.Json;
 
 namespace MagicTown_TownAPI.Services
 {
@@ -26,15 +27,24 @@ namespace MagicTown_TownAPI.Services
             return _db.Towns.ToList();
         }
 
-        public IEnumerable<Town> GetAllTownsTest(string filter, string orderBy, int pageSize, int pageNumber)
+        public IEnumerable<Town> GetAllTownsTest(string filter, string orderBy, int? pageSize = null, int? pageNumber = null)
         {
+            //IQueryable<Town> query = _db.Set<Town>();
             IQueryable<Town> query = _db.Towns;
+            IEnumerable<Town> towns = new List<Town>();
+
+            Dictionary<string,string> fsp = new Dictionary<string,string>();
 
             if (!string.IsNullOrEmpty(filter))
             {
-                if (filter.Contains("Name"))
+                fsp = JsonSerializer.Deserialize<Dictionary<string,string>>(filter);
+                //filter.Contains("Name")
+                if (fsp.ContainsKey("Name"))
                 {
-                    query = query.Where(t => t.Name.Contains(filter));
+                    var name = fsp["Name"];
+                    query = query.Where(t => t.Name.Contains(name));
+                    //towns = query.Where(t => t.Name.Contains(name)).ToList();
+
                 }else if (filter.Contains("Description"))
                 {
                     query = query.Where(t => t.Description.Contains(filter));
@@ -68,8 +78,14 @@ namespace MagicTown_TownAPI.Services
                 }
             }
 
-            return (pageNumber != null && pageSize != null) ? 
-                query.Skip((pageNumber - 1) * pageSize).Take(pageSize) : query;
+            //towns = (pageNumber != null && pageSize != null) ? 
+            //    query.Skip((pageNumber.Value - 1) * pageSize.Value).Take(pageSize.Value).ToList() : query.ToList();
+
+            towns = query.ToList();
+            return towns;
+
+            //return (pageNumber != null && pageSize != null) ? 
+            //    query.Skip((pageNumber.Value - 1) * pageSize.Value).Take(pageSize.Value) : query;
             //return _db.Towns.ToList();
         }
 
