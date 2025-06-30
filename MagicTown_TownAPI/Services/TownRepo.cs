@@ -34,47 +34,75 @@ namespace MagicTown_TownAPI.Services
             IEnumerable<Town> towns = new List<Town>();
 
             Dictionary<string,string> fsp = new Dictionary<string,string>();
+            
 
             if (!string.IsNullOrEmpty(filter))
             {
                 fsp = JsonSerializer.Deserialize<Dictionary<string,string>>(filter);
-                //filter.Contains("Name")
+                
                 if (fsp.ContainsKey("Name"))
                 {
-                    var name = fsp["Name"];
-                    query = query.Where(t => t.Name.Contains(name));
-                    //towns = query.Where(t => t.Name.Contains(name)).ToList();
+                    query = query.Where(t => t.Name.Contains(fsp["Name"]));
 
-                }else if (filter.Contains("Description"))
+                }
+                if (fsp.ContainsKey("Description"))
                 {
-                    query = query.Where(t => t.Description.Contains(filter));
-                } else if (filter.Contains("Population") && filter.Contains(">"))
+                    query = query.Where(t => t.Description.Contains(fsp["Description"]));
+                }
+                if (fsp.ContainsKey("Population") && fsp["Population"].Contains(">"))
                 {
-                    query = query.Where(t => t.Population > Int32.Parse(filter));
-                } else if (filter.Contains("Population") && filter.Contains("<"))
+                    query = query.Where(t => t.Population > Int32.Parse(fsp["Population"]));
+                } 
+                if (fsp.ContainsKey("Population") && fsp["Population"].Contains("<"))
                 {
-                    query = query.Where(t => t.Population < Int32.Parse(filter));
-                } else if (filter.Contains("AverageIncome") && filter.Contains("<"))
+                    query = query.Where(t => t.Population < Int32.Parse(fsp["Population"]));
+                } 
+                if (fsp.ContainsKey("AverageIncome") && fsp["AverageIncome"].Contains("<"))
                 {
-                    query = query.Where(t => t.AverageIncome < Int32.Parse(filter));
-                } else if (filter.Contains("AverageIncome") && filter.Contains(">"))
+                    query = query.Where(t => t.AverageIncome < Int32.Parse(fsp["AverageIncome"]));
+                } 
+                if (fsp.ContainsKey("AverageIncome") && fsp["AverageIncome"].Contains(">"))
                 {
-                    query = query.Where(t => t.AverageIncome > Int32.Parse(filter));
+                    query = query.Where(t => t.AverageIncome > Int32.Parse(fsp["AverageIncome"]));
                 }
                 
             }
 
             if (!string.IsNullOrEmpty(orderBy))
             {
+                fsp = JsonSerializer.Deserialize<Dictionary<string,string>>(orderBy);
+
                 if (orderBy.Contains("Name"))
                 {
-                    query = query.OrderBy(t => t.Name);
-                } else if (orderBy.Contains("Population"))
+                    if (fsp["Name"].Contains("DESC"))
+                    {
+                        query = query.OrderByDescending(t => t.Name);
+                    } else
+                    {
+                        query = query.OrderBy(t => t.Name);
+                    }
+                    
+                } 
+                if (orderBy.Contains("Population"))
                 {
-                    query = query.OrderBy(t => t.Population);
-                } else if (orderBy.Contains("AverageIncome"))
+                    if (fsp["Population"].Contains("DESC"))
+                    {
+                        query = query.OrderByDescending(t => t.Population);
+                    } else
+                    {
+                        query = query.OrderBy(t => t.Population);
+                    }
+                    
+                } 
+                if (orderBy.Contains("AverageIncome"))
                 {
-                    query = query.OrderBy(t => t.AverageIncome);
+                    if (fsp["AverageIncome"].Contains("DESC"))
+                    {
+                        query = query.OrderByDescending(t => t.AverageIncome);
+                    } else
+                    {
+                        query = query.OrderBy(t => t.AverageIncome);
+                    }
                 }
             }
 
