@@ -34,6 +34,7 @@ namespace MagicTown_TownAPI.Services
             IEnumerable<Town> towns = new List<Town>();
 
             Dictionary<string,string> fsp = new Dictionary<string,string>();
+            Dictionary<string,string> fspTwo = new Dictionary<string,string>();
             
 
             if (!string.IsNullOrEmpty(filter))
@@ -51,30 +52,34 @@ namespace MagicTown_TownAPI.Services
                 }
                 if (fsp.ContainsKey("Population") && fsp["Population"].Contains(">"))
                 {
-                    query = query.Where(t => t.Population > Int32.Parse(fsp["Population"]));
+                    var amountTest = Int32.Parse(fsp["Number"]);
+                    //query = query.Where(t => t.Population > Int32.Parse(fsp["Population"]));
+                    query = query.Where(t => t.Population > Int32.Parse(fsp["Number"]));
                 } 
                 if (fsp.ContainsKey("Population") && fsp["Population"].Contains("<"))
                 {
-                    query = query.Where(t => t.Population < Int32.Parse(fsp["Population"]));
+                    //query = query.Where(t => t.Population < Int32.Parse(fsp["Population"]));
+                    query = query.Where(t => t.Population > Int32.Parse(fsp["Number"]));
                 } 
                 if (fsp.ContainsKey("AverageIncome") && fsp["AverageIncome"].Contains("<"))
                 {
-                    query = query.Where(t => t.AverageIncome < Int32.Parse(fsp["AverageIncome"]));
+                    //query = query.Where(t => t.AverageIncome < Int32.Parse(fsp["AverageIncome"]));
+                    query = query.Where(t => t.AverageIncome < Int32.Parse(fsp["Number"]));
                 } 
                 if (fsp.ContainsKey("AverageIncome") && fsp["AverageIncome"].Contains(">"))
                 {
-                    query = query.Where(t => t.AverageIncome > Int32.Parse(fsp["AverageIncome"]));
+                    query = query.Where(t => t.AverageIncome > Int32.Parse(fsp["Number"]));
                 }
                 
             }
 
             if (!string.IsNullOrEmpty(orderBy))
             {
-                fsp = JsonSerializer.Deserialize<Dictionary<string,string>>(orderBy);
+                 fspTwo = JsonSerializer.Deserialize<Dictionary<string,string>>(orderBy);
 
                 if (orderBy.Contains("Name"))
                 {
-                    if (fsp["Name"].Contains("DESC"))
+                    if (fspTwo["Name"].Contains("DESC"))
                     {
                         query = query.OrderByDescending(t => t.Name);
                     } else
@@ -85,7 +90,7 @@ namespace MagicTown_TownAPI.Services
                 } 
                 if (orderBy.Contains("Population"))
                 {
-                    if (fsp["Population"].Contains("DESC"))
+                    if (fspTwo["Population"].Contains("DESC"))
                     {
                         query = query.OrderByDescending(t => t.Population);
                     } else
@@ -96,7 +101,7 @@ namespace MagicTown_TownAPI.Services
                 } 
                 if (orderBy.Contains("AverageIncome"))
                 {
-                    if (fsp["AverageIncome"].Contains("DESC"))
+                    if (fspTwo["AverageIncome"].Contains("DESC"))
                     {
                         query = query.OrderByDescending(t => t.AverageIncome);
                     } else
